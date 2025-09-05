@@ -1,3 +1,3 @@
-INSERT INTO member(password, userName) VALUES ('aaa', 'aaa');
-INSERT INTO member(password, userName) VALUES ('aaa', 'aab');
-INSERT INTO member(password, userName) VALUES ('aaa', 'aac');
+INSERT INTO member(username, password) VALUES ('aaa', 'aaa');
+INSERT INTO member(username, password) VALUES ('aab', 'aaa');
+INSERT INTO member(username, password) VALUES ('aac', 'aaa');

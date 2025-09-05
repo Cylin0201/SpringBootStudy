@@ -24,4 +24,8 @@ public class MemberService {
     public List<Member> findAll(){
         return memberRepository.findAll();
     }
+
+    public Optional<Member> findByUserName(String userName){
+        return memberRepository.findByUserName(userName);
+    }
 }

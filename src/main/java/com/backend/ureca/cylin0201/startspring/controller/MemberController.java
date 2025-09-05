@@ -40,4 +40,13 @@ public class MemberController {
         return ResponseEntity.ok(memberList);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginDto dto){
+        Optional<Member> member = memberService.findByUserName(dto.userName);
+        if (member.isEmpty()) throw new RuntimeException();
+
+        if (member.get().getPassword().equals(dto.password))
+            return ResponseEntity.ok("로그인 완료입니다.");
+        else return ResponseEntity.badRequest().body("로그인 실패");
+    }
 }

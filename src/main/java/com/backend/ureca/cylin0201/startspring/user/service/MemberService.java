@@ -1,7 +1,7 @@
-package com.backend.ureca.cylin0201.startspring.service;
+package com.backend.ureca.cylin0201.startspring.user.service;
 
-import com.backend.ureca.cylin0201.startspring.domain.Member;
-import com.backend.ureca.cylin0201.startspring.repository.MemberRepository;
+import com.backend.ureca.cylin0201.startspring.user.domain.Member;
+import com.backend.ureca.cylin0201.startspring.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

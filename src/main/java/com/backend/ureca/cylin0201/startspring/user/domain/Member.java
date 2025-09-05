@@ -1,7 +1,11 @@
-package com.backend.ureca.cylin0201.startspring.domain;
+package com.backend.ureca.cylin0201.startspring.user.domain;
 
+import com.backend.ureca.cylin0201.startspring.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,4 +23,8 @@ public class Member {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    // 양방향 관계 (옵션)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
 }

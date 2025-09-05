@@ -1,8 +1,8 @@
-package com.backend.ureca.cylin0201.startspring.controller;
+package com.backend.ureca.cylin0201.startspring.user.controller;
 
-import com.backend.ureca.cylin0201.startspring.domain.Member;
-import com.backend.ureca.cylin0201.startspring.dto.LoginDto;
-import com.backend.ureca.cylin0201.startspring.service.MemberService;
+import com.backend.ureca.cylin0201.startspring.user.domain.Member;
+import com.backend.ureca.cylin0201.startspring.user.dto.LoginDto;
+import com.backend.ureca.cylin0201.startspring.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

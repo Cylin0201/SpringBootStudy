@@ -1,6 +1,6 @@
-package com.backend.ureca.cylin0201.startspring.repository;
+package com.backend.ureca.cylin0201.startspring.user.repository;
 
-import com.backend.ureca.cylin0201.startspring.domain.Member;
+import com.backend.ureca.cylin0201.startspring.user.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

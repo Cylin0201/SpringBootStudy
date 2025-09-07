@@ -1,4 +1,4 @@
-package com.backend.ureca.cylin0201.startspring.user.dto;
+package com.backend.ureca.cylin0201.startspring.post.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -1,12 +1,12 @@
 package com.backend.ureca.cylin0201.startspring.user.controller;
 
 import com.backend.ureca.cylin0201.startspring.post.domain.Post;
-import com.backend.ureca.cylin0201.startspring.post.repository.PostRepository;
 import com.backend.ureca.cylin0201.startspring.user.domain.Member;
 import com.backend.ureca.cylin0201.startspring.user.dto.LoginDto;
-import com.backend.ureca.cylin0201.startspring.user.dto.PostResponse;
+import com.backend.ureca.cylin0201.startspring.post.dto.PostResponse;
 import com.backend.ureca.cylin0201.startspring.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,5 +70,11 @@ public class MemberController {
                 ))
                 .toList()
                 );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleException(IllegalArgumentException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
     }
 }

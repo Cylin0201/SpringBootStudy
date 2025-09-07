@@ -5,13 +5,12 @@ import com.backend.ureca.cylin0201.startspring.post.dto.PostRequest;
 import com.backend.ureca.cylin0201.startspring.post.dto.UpdatePostRequest;
 import com.backend.ureca.cylin0201.startspring.post.repository.PostRepository;
 import com.backend.ureca.cylin0201.startspring.user.domain.Member;
-import com.backend.ureca.cylin0201.startspring.user.dto.PostResponse;
+import com.backend.ureca.cylin0201.startspring.post.dto.PostResponse;
 import com.backend.ureca.cylin0201.startspring.user.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor

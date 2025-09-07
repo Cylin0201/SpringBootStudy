@@ -1,14 +1,11 @@
 package com.backend.ureca.cylin0201.startspring.post.controller;
 
-import com.backend.ureca.cylin0201.startspring.post.domain.Post;
 import com.backend.ureca.cylin0201.startspring.post.dto.PostRequest;
 import com.backend.ureca.cylin0201.startspring.post.dto.UpdatePostRequest;
 import com.backend.ureca.cylin0201.startspring.post.service.PostService;
-import com.backend.ureca.cylin0201.startspring.user.dto.PostResponse;
-import lombok.AllArgsConstructor;
+import com.backend.ureca.cylin0201.startspring.post.dto.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

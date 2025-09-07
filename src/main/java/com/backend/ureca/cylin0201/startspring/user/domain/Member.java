@@ -1,6 +1,7 @@
 package com.backend.ureca.cylin0201.startspring.user.domain;
 
 import com.backend.ureca.cylin0201.startspring.post.domain.Post;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +26,7 @@ public class Member {
     private String password;
 
     // 양방향 관계 (옵션)
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Post> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private final List<Post> posts = new ArrayList<>();
 }

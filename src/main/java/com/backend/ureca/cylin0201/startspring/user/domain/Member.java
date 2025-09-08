@@ -1,6 +1,7 @@
 package com.backend.ureca.cylin0201.startspring.user.domain;
 
 import com.backend.ureca.cylin0201.startspring.post.domain.Post;
+import com.backend.ureca.cylin0201.startspring.user.dto.LoginDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;

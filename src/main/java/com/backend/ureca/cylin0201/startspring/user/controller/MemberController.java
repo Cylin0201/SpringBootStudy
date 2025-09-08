@@ -20,10 +20,7 @@ public class MemberController {
 
     @PostMapping("/members")
     public ResponseEntity<Member> join(@RequestBody LoginDto loginDto) {
-        Member member = Member.builder()
-                .userName(loginDto.userName)
-                .password(loginDto.password)
-                .build();
+        Member member = loginDto.toEntity();
         memberService.join(member);
 
         return ResponseEntity.ok()

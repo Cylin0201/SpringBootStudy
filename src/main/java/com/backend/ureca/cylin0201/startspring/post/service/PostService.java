@@ -57,22 +57,15 @@ public class PostService {
         Post post = postRepository.findById(request.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 Post입니다."));
 
-        Post newPost = Post.builder()
-                .member(post.getMember())
-                .title(request.getTitle())
-                .content(request.getContent())
-                .updatedAt(LocalDateTime.now())
-                .createdAt(post.getCreatedAt())
-                .build();
-        postRepository.deleteById(post.getId());
-
-        postRepository.save(newPost);
+        post.setTitle(request.getTitle());
+        post.setContent(request.getContent());
+        post.setUpdatedAt(LocalDateTime.now());
 
         return new PostResponse(
-                newPost.getId(),
-                newPost.getTitle(),
-                newPost.getContent(),
-                newPost.getMember().getUserName());
+                post.getId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getMember().getUserName());
     }
 
     //포스트 삭제

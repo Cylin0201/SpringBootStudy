@@ -1,6 +1,6 @@
 package com.backend.ureca.cylin0201.startspring.repository;
 
-import com.backend.ureca.cylin0201.startspring.user.domain.Member;
+import com.backend.ureca.cylin0201.startspring.domain.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

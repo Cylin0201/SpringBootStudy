@@ -1,9 +1,8 @@
-package com.backend.ureca.cylin0201.startspring.user.service;
+package com.backend.ureca.cylin0201.startspring.member.service;
 
-import com.backend.ureca.cylin0201.startspring.post.domain.Post;
-import com.backend.ureca.cylin0201.startspring.post.repository.PostRepository;
-import com.backend.ureca.cylin0201.startspring.user.domain.Member;
-import com.backend.ureca.cylin0201.startspring.user.repository.MemberRepository;
+import com.backend.ureca.cylin0201.startspring.domain.Post;
+import com.backend.ureca.cylin0201.startspring.domain.Member;
+import com.backend.ureca.cylin0201.startspring.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

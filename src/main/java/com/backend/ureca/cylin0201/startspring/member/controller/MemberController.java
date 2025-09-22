@@ -63,7 +63,7 @@ public class MemberController {
                         post.getId(),
                         post.getTitle(),
                         post.getContent(),
-                        member.getUserName()
+                        member.getUsername()
                 ))
                 .toList()
                 );

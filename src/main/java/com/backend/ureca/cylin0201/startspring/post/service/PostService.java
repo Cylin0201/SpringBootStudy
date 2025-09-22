@@ -35,7 +35,7 @@ public class PostService {
                 saved.getId(),
                 saved.getTitle(),
                 saved.getContent(),
-                post.getMember().getUserName()
+                post.getMember().getUsername()
         );
     }
 
@@ -48,7 +48,7 @@ public class PostService {
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getMember().getUserName()
+                post.getMember().getUsername()
         );
     }
 
@@ -65,7 +65,7 @@ public class PostService {
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getMember().getUserName());
+                post.getMember().getUsername());
     }
 
     //포스트 삭제

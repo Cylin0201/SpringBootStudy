@@ -12,7 +12,7 @@ public class LoginDto{
     @Builder
     public Member toEntity(){
         return Member.builder()
-                .userName(userName)
+                .username(userName)
                 .password(password)
                 .build();
     }

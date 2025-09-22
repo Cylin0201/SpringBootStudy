@@ -1,10 +1,7 @@
 package com.backend.ureca.cylin0201.startspring.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Setter
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,7 +30,7 @@ public class Comment {
     private Comment parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> children = new ArrayList<>();
+    private final List<Comment> children = new ArrayList<>();
 
     @Column(name= "content", nullable = false)
     private String content;

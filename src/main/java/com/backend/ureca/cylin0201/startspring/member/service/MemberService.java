@@ -26,8 +26,8 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    public Optional<Member> findByUserName(String userName){
-        return memberRepository.findByUserName(userName);
+    public Optional<Member> findByUserName(String username){
+        return memberRepository.findByUsername(username);
     }
 
     //멤버의 작성된 포스트 조회

@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Setter
+@Setter @Getter
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

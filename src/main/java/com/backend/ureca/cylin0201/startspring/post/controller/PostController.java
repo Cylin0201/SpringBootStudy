@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class PostController {
@@ -19,10 +21,10 @@ public class PostController {
         return ResponseEntity.ok(postService.uploadPost(req));
     }
 
-    @GetMapping("/posts/{postId}")
-    ResponseEntity<PostResponse> getPstById(@PathVariable Long postId){
+    @GetMapping("/posts/")
+    ResponseEntity<List<PostResponse>> getPstById(){
         return ResponseEntity.ok()
-                .body(postService.getPostById(postId));
+                .body(postService.getAllPosts());
     }
 
     @DeleteMapping("/posts/{postId}")

@@ -11,6 +11,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -50,6 +52,19 @@ public class PostService {
                 post.getContent(),
                 post.getMember().getUsername()
         );
+    }
+
+    public List<PostResponse> getAllPosts(){
+        List<Post> posts = postRepository.findAll();
+        List<PostResponse> list = new ArrayList<>();
+        for (var post: posts){
+            list.add(new PostResponse(
+                    post.getId(),
+                    post.getTitle(),
+                    post.getContent(),
+                    post.getMember().getUsername()));
+        }
+        return list;
     }
 
     //포스트 업데이트

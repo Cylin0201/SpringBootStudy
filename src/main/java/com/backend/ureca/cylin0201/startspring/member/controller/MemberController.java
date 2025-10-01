@@ -3,70 +3,100 @@ package com.backend.ureca.cylin0201.startspring.member.controller;
 import com.backend.ureca.cylin0201.startspring.domain.Post;
 import com.backend.ureca.cylin0201.startspring.domain.Member;
 import com.backend.ureca.cylin0201.startspring.member.dto.LoginDto;
+import com.backend.ureca.cylin0201.startspring.member.dto.MemberResponse;
 import com.backend.ureca.cylin0201.startspring.post.dto.PostResponse;
 import com.backend.ureca.cylin0201.startspring.member.service.MemberService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
 
-    @PostMapping("/members")
-    public ResponseEntity<Member> join(@RequestBody LoginDto loginDto) {
-        Member member = loginDto.toEntity();
-        memberService.join(member);
-
-        return ResponseEntity.ok()
-                .body(member);
-    }
-
+    @ResponseBody
     @GetMapping("/members/{id}")
-    public ResponseEntity<Optional<Member>> findById(@PathVariable Long id) {
-        Optional<Member> member = memberService.findById(id);
+    public ResponseEntity<MemberResponse> findById(@PathVariable Long id) {
+        Member member = memberService.findById(id)
+                .orElseThrow(()->new IllegalArgumentException("존재하지 않는 멤버입니다."));
         return ResponseEntity.ok()
-                .body(member);
+                .body(member.from());
     }
 
+    @ResponseBody
     @GetMapping("/members")
-    public ResponseEntity<List<Member>> findAll() {
-        List<Member> memberList = memberService.findAll();
+    public ResponseEntity<List<MemberResponse>> findAll() {
+        List<MemberResponse> memberList = memberService.findAll()
+                .stream()
+                .map(Member::from)
+                .toList();
         return ResponseEntity.ok(memberList);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto dto) {
-        Optional<Member> member = memberService.findByUserName(dto.userName);
-        if (member.isEmpty()) throw new RuntimeException();
-
-        if (member.get().getPassword().equals(dto.password))
-            return ResponseEntity.ok("로그인 완료입니다.");
-        else return ResponseEntity.badRequest().body("로그인 실패");
+    @GetMapping("/login")
+    public String loginForm() {
+        return "login"; // login.html 반환
     }
 
+    @ResponseBody
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginDto dto, HttpSession session) {
+        Member member = memberService.findByUserName(dto.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 멤버 아이디가 없습니다."));
+
+        if (!memberService.matchesPassword(dto.getPassword(), member.getPassword())) {
+            return ResponseEntity.badRequest().body("로그인 실패");
+        }
+        // 로그인 성공 → 세션에 사용자 정보 저장
+        session.setAttribute("loginMember", member);
+        return ResponseEntity.ok("로그인 완료입니다.");
+    }
+
+    @GetMapping("/join")
+    public String joinForm() {
+        return "join"; // login.html 반환
+    }
+
+    @PostMapping("/members")
+    public String join(@ModelAttribute LoginDto dto) {
+        memberService.join(dto);
+        return "redirect:/login";
+    }
+
+    @ResponseBody
     @GetMapping("/posts")
-    public ResponseEntity<List<PostResponse>> getAllPosts(@RequestParam Long id) {
-        Member member = memberService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("유저 없거나 잘못된 id"));
+    public ResponseEntity<List<PostResponse>> getAllPosts(HttpSession session) {
+        Member loginMember = (Member) session.getAttribute("loginMember");
+        if (loginMember == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
 
-        List<Post> posts = memberService.getAllPosts(id);
+        List<Post> posts = memberService.getAllPosts(loginMember.getId());
 
-        return ResponseEntity.ok()
-                .body(posts.stream()
-                .map(post -> new PostResponse(
-                        post.getId(),
-                        post.getTitle(),
-                        post.getContent(),
-                        member.getUsername()
-                ))
-                .toList()
-                );
+        return ResponseEntity.ok(
+                posts.stream()
+                        .map(post -> new PostResponse(
+                                post.getId(),
+                                post.getTitle(),
+                                post.getContent(),
+                                loginMember.getUsername()))
+                        .toList()
+        );
+    }
+
+    @ResponseBody
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpSession session) {
+        session.invalidate(); // 세션 무효화 → 로그아웃
+        return ResponseEntity.ok("로그아웃 완료");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

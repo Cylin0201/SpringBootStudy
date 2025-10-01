@@ -66,7 +66,6 @@ public class CommentService {
         commentRepository.deleteById(commentId);
     }
 
-
     //댓글 수정
     public void updateComment(Long commentId, String content){
         Comment comment = commentRepository.findById(commentId)

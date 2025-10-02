@@ -53,11 +53,42 @@ public class PostController {
         return "redirect:/posts";
     }
 
+    @GetMapping("/posts/{postId}")
+    public String getDetailPost(@PathVariable("postId") Long postId, Model model, HttpSession session) {
+        PostResponse post = postService.getPostById(postId);
+        model.addAttribute("post", post);
+
+        SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+        if (context == null || context.getAuthentication() == null) {
+            return "redirect:/login";
+        }
+
+        String username = context.getAuthentication().getName();
+        Member loginMember = memberService.findByUserName(username).orElse(null);
+
+        boolean canDelete = loginMember != null && loginMember.getUsername().equalsIgnoreCase(post.getMemberName());
+        model.addAttribute("canDelete", canDelete);
+
+        return "post/post_detail";
+    }
+
 
     @DeleteMapping("/posts/{postId}")
-    ResponseEntity<String> deletePost(@PathVariable Long postId){
-        return ResponseEntity.ok()
-                .body("포스트가 삭제되었습니다." + postService.deletePost(postId));
+    public String deletePost(@PathVariable Long postId, HttpSession session) {
+        PostResponse post = postService.getPostById(postId);
+        SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+        String username = context.getAuthentication().getName();
+
+        if (context == null || context.getAuthentication() == null) {
+            return "redirect:/login";
+        }
+
+        if (username == null || !username.equals(post.getMemberName())) {
+            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        }
+
+        postService.deletePost(postId);
+        return "redirect:/posts";
     }
 
     @PutMapping("/posts")

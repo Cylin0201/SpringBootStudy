@@ -10,6 +10,10 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +25,49 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+
+    // 회원가입 폼 화면
+    @GetMapping("/join")
+    public String joinForm(Model model) {
+        model.addAttribute("loginDto", new LoginDto()); // 폼에 바인딩할 객체
+        return "join";
+    }
+
+    // 회원가입 처리
+    @PostMapping("/members")
+    public String signup(@ModelAttribute LoginDto loginDto) {
+        memberService.join(loginDto);
+        return "redirect:/login";
+    }
+
+    // 로그인 폼 페이지
+    @GetMapping("/login")
+    public String loginForm(Model model) {
+        model.addAttribute("loginDto", new LoginDto());
+        return "login"; // login.html
+    }
+
+    // 로그인 처리
+    @PostMapping("/login")
+    public String login(@ModelAttribute LoginDto loginDto, HttpSession session, Model model) {
+        Member member = memberService.findByUserName(loginDto.getUsername()).orElse(null);
+
+        if (member == null || !memberService.matchesPassword(loginDto.getPassword(), member.getPassword())) {
+            model.addAttribute("error", "아이디 또는 비밀번호가 올바르지 않습니다.");
+            return "login";
+        }
+
+        // 1. 로그인 성공 시 SecurityContextHolder에 인증 정보 등록
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                member.getUsername(), null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // 2. HttpSession에도 보관 (시큐리티 세션 동기화)
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+        return "redirect:/";
+    }
+
 
     @ResponseBody
     @GetMapping("/members/{id}")
@@ -39,36 +86,6 @@ public class MemberController {
                 .map(Member::from)
                 .toList();
         return ResponseEntity.ok(memberList);
-    }
-
-    @GetMapping("/login")
-    public String loginForm() {
-        return "login"; // login.html 반환
-    }
-
-    @ResponseBody
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto dto, HttpSession session) {
-        Member member = memberService.findByUserName(dto.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 멤버 아이디가 없습니다."));
-
-        if (!memberService.matchesPassword(dto.getPassword(), member.getPassword())) {
-            return ResponseEntity.badRequest().body("로그인 실패");
-        }
-        // 로그인 성공 → 세션에 사용자 정보 저장
-        session.setAttribute("loginMember", member);
-        return ResponseEntity.ok("로그인 완료입니다.");
-    }
-
-    @GetMapping("/join")
-    public String joinForm() {
-        return "join"; // login.html 반환
-    }
-
-    @PostMapping("/members")
-    public String join(@ModelAttribute LoginDto dto) {
-        memberService.join(dto);
-        return "redirect:/login";
     }
 
     @ResponseBody

@@ -19,17 +19,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**", "/login", "/join", "/css/**").permitAll()
+                        .requestMatchers("/h2-console/**", "/login", "/join", "/css/**", "/members").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
-                        .frameOptions(frameOptions -> frameOptions.disable()) // H2 콘솔 iframe 허용
+                        .frameOptions(frameOptions -> frameOptions.disable())
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/")
-                        .permitAll()
-                )
+                .formLogin(form -> form.disable()) // ✅ 시큐리티 로그인 기능 비활성화
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login")
                         .permitAll()

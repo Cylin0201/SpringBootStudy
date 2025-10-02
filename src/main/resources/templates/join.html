@@ -7,11 +7,18 @@
 </head>
 <body>
 <h1>회원가입</h1>
-<form th:action="@{/members}" method="post">
-    <input type="text" name="username" placeholder="아이디" required>
-    <input type="password" name="password" placeholder="비밀번호" required>
+
+<!-- LoginDto 객체를 form에 바인딩 -->
+<form th:action="@{/members}" th:object="${loginDto}" method="post">
+    <!-- LoginDto.username -->
+    <input type="text" th:field="*{username}" placeholder="아이디" required>
+
+    <!-- LoginDto.password -->
+    <input type="password" th:field="*{password}" placeholder="비밀번호" required>
+
     <button type="submit">회원가입</button>
 </form>
+
 <p>이미 계정이 있으신가요? <a th:href="@{/login}">로그인</a></p>
 </body>
 </html>

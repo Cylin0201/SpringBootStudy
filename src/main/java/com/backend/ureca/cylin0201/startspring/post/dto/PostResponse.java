@@ -1,9 +1,10 @@
 package com.backend.ureca.cylin0201.startspring.post.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
-@Getter
+@Getter @Setter
 public class PostResponse {
     private Long id;
     private String title;

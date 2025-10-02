@@ -30,7 +30,7 @@ public class MemberController {
     @GetMapping("/join")
     public String joinForm(Model model) {
         model.addAttribute("loginDto", new LoginDto()); // 폼에 바인딩할 객체
-        return "join";
+        return "member/join";
     }
 
     // 회원가입 처리
@@ -44,7 +44,7 @@ public class MemberController {
     @GetMapping("/login")
     public String loginForm(Model model) {
         model.addAttribute("loginDto", new LoginDto());
-        return "login"; // login.html
+        return "member/login"; // login.html
     }
 
     // 로그인 처리
@@ -54,7 +54,7 @@ public class MemberController {
 
         if (member == null || !memberService.matchesPassword(loginDto.getPassword(), member.getPassword())) {
             model.addAttribute("error", "아이디 또는 비밀번호가 올바르지 않습니다.");
-            return "login";
+            return "member/login";
         }
 
         // 1. 로그인 성공 시 SecurityContextHolder에 인증 정보 등록
@@ -65,7 +65,7 @@ public class MemberController {
         // 2. HttpSession에도 보관 (시큐리티 세션 동기화)
         session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
-        return "redirect:/";
+        return "redirect:/posts";
     }
 
 
@@ -86,27 +86,6 @@ public class MemberController {
                 .map(Member::from)
                 .toList();
         return ResponseEntity.ok(memberList);
-    }
-
-    @ResponseBody
-    @GetMapping("/posts")
-    public ResponseEntity<List<PostResponse>> getAllPosts(HttpSession session) {
-        Member loginMember = (Member) session.getAttribute("loginMember");
-        if (loginMember == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-
-        List<Post> posts = memberService.getAllPosts(loginMember.getId());
-
-        return ResponseEntity.ok(
-                posts.stream()
-                        .map(post -> new PostResponse(
-                                post.getId(),
-                                post.getTitle(),
-                                post.getContent(),
-                                loginMember.getUsername()))
-                        .toList()
-        );
     }
 
     @ResponseBody

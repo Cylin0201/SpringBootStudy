@@ -1,31 +1,58 @@
 package com.backend.ureca.cylin0201.startspring.post.controller;
 
+import com.backend.ureca.cylin0201.startspring.domain.Member;
+import com.backend.ureca.cylin0201.startspring.member.service.MemberService;
 import com.backend.ureca.cylin0201.startspring.post.dto.PostRequest;
 import com.backend.ureca.cylin0201.startspring.post.dto.UpdatePostRequest;
 import com.backend.ureca.cylin0201.startspring.post.service.PostService;
 import com.backend.ureca.cylin0201.startspring.post.dto.PostResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final MemberService memberService;
+
+    @GetMapping("/posts/new")
+    public String newPostForm(Model model, HttpSession session) {
+        SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+        if (context == null || context.getAuthentication() == null) {
+            return "redirect:/login";
+        }
+        String username = context.getAuthentication().getName();
+        Member loginMember = memberService.findByUserName(username).orElse(null);
+        if (loginMember == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("memberId", loginMember.getId());
+        model.addAttribute("postRequest", new PostRequest(loginMember.getId(), "", ""));
+        return "post/post_form";
+    }
+
+    @GetMapping("/posts")
+    public String getPosts(Model model) {
+        List<PostResponse> posts = postService.getAllPosts();
+        model.addAttribute("posts", posts);
+        return "post/posts";
+    }
 
     @PostMapping("/posts")
-    ResponseEntity<PostResponse> uploadPost(@RequestBody PostRequest req){
-        return ResponseEntity.ok(postService.uploadPost(req));
+    public String createPost(@ModelAttribute PostRequest postRequest) {
+        postService.uploadPost(postRequest);
+        return "redirect:/posts";
     }
 
-    @GetMapping("/posts/")
-    ResponseEntity<List<PostResponse>> getPstById(){
-        return ResponseEntity.ok()
-                .body(postService.getAllPosts());
-    }
 
     @DeleteMapping("/posts/{postId}")
     ResponseEntity<String> deletePost(@PathVariable Long postId){

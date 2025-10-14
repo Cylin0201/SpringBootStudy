@@ -192,5 +192,41 @@
 
 <p th:if="${#lists.isEmpty(posts)}" class="no-posts">등록된 게시글이 없습니다.</p>
 
-</body>
-</html>
+<!-- 페이징 -->
+<nav th:if="${totalPages >= 1}" aria-label="페이지네이션">
+    <ul class="pagination">
+        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+            th:classappend="${i == currentPage} ? 'active'">
+            <a th:href="@{/posts(page=${i}, keyword=${keyword}, type=${type})}" th:text="${i}"></a>
+        </li>
+    </ul>
+</nav>
+
+<style>
+    .pagination {
+        display: flex;
+        gap: 0.5em;
+        list-style: none;
+        margin-top: 1em;
+        padding-left: 0;
+    }
+
+    .pagination li a {
+        display: block;
+        padding: 0.4em 0.7em;
+        text-decoration: none;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        color: #007bff;
+    }
+
+    .pagination li.active a {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .pagination li a:hover {
+        background-color: #e9ecef;
+    }
+</style>

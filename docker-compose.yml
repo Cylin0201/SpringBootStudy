@@ -1,0 +1,25 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: post_db
+      # MYSQL_USER와 MYSQL_PASSWORD는 루트가 이미 있으므로 생략 가능
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - "5000:8080"
+    depends_on:
+      - mysql
+
+volumes:
+  mysql-data:

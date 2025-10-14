@@ -19,7 +19,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**", "/login", "/join", "/css/**", "/members", "/posts").permitAll()
+                        .requestMatchers("/h2-console/**", "/login", "/join", "/css/**", "/members", "/posts", "/posts/boomb").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers

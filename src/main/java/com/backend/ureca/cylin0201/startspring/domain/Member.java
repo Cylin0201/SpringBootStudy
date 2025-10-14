@@ -34,9 +34,6 @@ public class Member {
     private final List<Post> posts = new ArrayList<>();
 
 
-    //추후에 사용자가 단 댓글 -> 댓글이 달려져 있는 글 조회 가능하게...
-
-
     public void addPost(Post post){
         posts.add(post);
         post.setMember(this);

@@ -11,6 +11,8 @@ import com.backend.ureca.cylin0201.startspring.domain.Member;
 import com.backend.ureca.cylin0201.startspring.post.dto.PostResponse;
 import com.backend.ureca.cylin0201.startspring.member.repository.MemberRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,18 +78,9 @@ public class PostService {
         );
     }
 
-
-    public List<PostResponse> getAllPosts(){
-        List<Post> posts = postRepository.findAll();
-        List<PostResponse> list = new ArrayList<>();
-        for (var post: posts){
-            list.add(new PostResponse(
-                    post.getId(),
-                    post.getTitle(),
-                    post.getContent(),
-                    post.getMember().getUsername()));
-        }
-        return list;
+    public Page<PostResponse> getAllPosts(Pageable pageable){
+        return postRepository.findAllPosts(pageable)
+                .map(PostResponse::new);
     }
 
     //포스트 업데이트
@@ -116,24 +109,19 @@ public class PostService {
     }
 
     //검색 기능
-    public List<PostResponse> searchPostsByMemberName(String keyword) {
+    public Page<PostResponse> searchPostsByMemberName(String keyword, Pageable pageable) {
         if (keyword == null || keyword.trim().isEmpty()) {
-            return Collections.emptyList();
+            return Page.empty();
         }
-        return postRepository.searchIdByMemberName(keyword)
-                .stream()
-                .map(PostResponse::new)
-                .toList();
+        return postRepository.searchIdByMemberName(keyword, pageable)
+                .map(PostResponse::new);
     }
 
-
-    public List<PostResponse> searchPostsByTitleOrContent(String keyword) {
+    public Page<PostResponse> searchPostsByTitleOrContent(String keyword, Pageable pageable) {
         if (keyword == null || keyword.trim().isEmpty()) {
-            return Collections.emptyList();
+            return Page.empty();
         }
-        return postRepository.searchIdByTitleOrContent(keyword)
-                .stream()
-                .map(PostResponse::new)
-                .toList();
+        return postRepository.searchIdByTitleOrContent(keyword, pageable)
+                .map(PostResponse::new);
     }
 }

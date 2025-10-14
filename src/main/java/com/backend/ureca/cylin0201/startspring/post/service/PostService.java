@@ -115,15 +115,25 @@ public class PostService {
         return postId;
     }
 
-
     //검색 기능
-    public List<Long> searchPostIdsByTitle(String keyword) {
-        if (keyword == null || keyword.isEmpty()) return Collections.emptyList();
-        return postRepository.searchIdByTitle(keyword);
+    public List<PostResponse> searchPostsByMemberName(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return postRepository.searchIdByMemberName(keyword)
+                .stream()
+                .map(PostResponse::new)
+                .toList();
     }
 
-    public List<Long> searchPostIdsByTitleOrContent(String keyword) {
-        if (keyword == null || keyword.isEmpty()) return Collections.emptyList();
-        return postRepository.searchIdByTitleOrContent(keyword);
+
+    public List<PostResponse> searchPostsByTitleOrContent(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return postRepository.searchIdByTitleOrContent(keyword)
+                .stream()
+                .map(PostResponse::new)
+                .toList();
     }
 }

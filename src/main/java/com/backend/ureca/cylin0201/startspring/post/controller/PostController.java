@@ -42,16 +42,31 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public String postList(HttpSession session, Model model) {
-        // posts 서비스 호출 (예시)
-        List<PostResponse> posts = postService.getAllPosts();
-        model.addAttribute("posts", posts);
+    public String listPosts(@RequestParam(required = false) String keyword,
+                            @RequestParam(defaultValue = "memberName") String type,
+                            Model model, HttpSession session) {
 
-        // 로그인 상태 체크
+        List<PostResponse> posts;
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // 검색어가 없을 경우 전체 게시글 조회
+            posts = postService.getAllPosts();
+        } else {
+            // 검색어가 있을 경우
+            if ("titleContent".equals(type)) {
+                posts = postService.searchPostsByTitleOrContent(keyword);
+            } else {
+                posts = postService.searchPostsByMemberName(keyword);
+            }
+        }
+
         String memberName = (String) session.getAttribute("memberName");
-        model.addAttribute("memberName", memberName); // null이면 로그인 안 됨
+        model.addAttribute("posts", posts);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("type", type);
+        model.addAttribute("memberName", memberName); // 세션 정보가 있다면 가져와서 넣기
 
-        return "post/posts"; // Thymeleaf 템플릿
+        return "post/posts"; // templates/posts.html 렌더링
     }
 
     @PostMapping("/posts")

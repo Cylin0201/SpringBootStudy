@@ -5,6 +5,7 @@
     <title>게시글 목록</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
+        /* 기존 스타일 유지 */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 2em;
@@ -45,16 +46,6 @@
             background-color: #c82333;
         }
 
-        p a {
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        p a:hover {
-            text-decoration: underline;
-        }
-
-        /* 글쓰기 버튼 */
         .write-btn {
             display: inline-block;
             margin-bottom: 1em;
@@ -67,6 +58,40 @@
 
         .write-btn:hover {
             background-color: #218838;
+        }
+
+        /* 검색 폼 스타일 */
+        .search-form {
+            display: flex;
+            gap: 0.5em;
+            align-items: center;
+            margin-bottom: 1.5em;
+        }
+
+        .search-input {
+            padding: 0.4em 0.6em;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            width: 250px;
+        }
+
+        .search-select {
+            padding: 0.4em;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        .search-btn {
+            padding: 0.4em 0.8em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .search-btn:hover {
+            background-color: #0056b3;
         }
 
         table {
@@ -92,35 +117,24 @@
             background-color: #f8f9fa;
         }
 
-        /* 게시글 없을 때 */
         .no-posts {
             font-style: italic;
             color: #6c757d;
             margin-top: 1em;
         }
-
-        @media (max-width: 768px) {
-            table, th, td {
-                font-size: 0.9em;
-            }
-            .header h1 {
-                font-size: 1.5em;
-            }
-        }
     </style>
 
     <script>
         function logout() {
-            fetch('/logout', {
-                method: 'POST'
-            }).then(response => {
-                if (response.ok) {
-                    alert("로그아웃 완료");
-                    window.location.href = '/posts';
-                } else {
-                    alert("로그아웃 실패");
-                }
-            });
+            fetch('/logout', { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        alert("로그아웃 완료");
+                        window.location.href = '/posts';
+                    } else {
+                        alert("로그아웃 실패");
+                    }
+                });
         }
     </script>
 </head>
@@ -129,12 +143,10 @@
 <div class="header">
     <h1>게시글 목록</h1>
     <div class="user-info">
-        <!-- 로그인 상태 -->
         <span th:if="${memberName != null}">
             환영합니다, <span th:text="${memberName}">사용자</span>!
             <button class="logout-btn" onclick="logout()">로그아웃</button>
         </span>
-        <!-- 로그인 안 된 상태 -->
         <span th:if="${memberName == null}">
             로그인 필요
             <a th:href="@{/login}">로그인</a>
@@ -142,10 +154,21 @@
     </div>
 </div>
 
-<!-- 글쓰기 버튼: 로그인했을 때만 -->
+<!-- 검색 폼 -->
+<form class="search-form" th:action="@{/posts}" method="get">
+    <input type="text" name="keyword" class="search-input" placeholder="검색어 입력"
+           th:value="${keyword}">
+    <select name="type" class="search-select">
+        <option value="memberName" th:selected="${type == 'title'}">글쓴이</option>
+        <option value="titleContent" th:selected="${type == 'titleContent'}">제목+내용</option>
+    </select>
+    <button type="submit" class="search-btn">검색</button>
+</form>
+
+<!-- 글쓰기 버튼 -->
 <a th:if="${memberName != null}" th:href="@{/posts/new}" class="write-btn">글쓰기</a>
 
-<!-- 게시글 리스트 테이블 -->
+<!-- 게시글 리스트 -->
 <table>
     <thead>
     <tr>
@@ -167,7 +190,6 @@
     </tbody>
 </table>
 
-<!-- 게시글 없을 때 메시지 -->
 <p th:if="${#lists.isEmpty(posts)}" class="no-posts">등록된 게시글이 없습니다.</p>
 
 </body>

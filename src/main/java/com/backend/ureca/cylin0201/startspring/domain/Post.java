@@ -1,5 +1,6 @@
 package com.backend.ureca.cylin0201.startspring.domain;
 
+import com.backend.ureca.cylin0201.startspring.post.dto.PostCommentResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -51,5 +52,11 @@ public class Post {
     public void addComment(Comment comment){
         comments.add(comment);
         comment.setPost(this);
+    }
+
+    public PostCommentResponse from(){
+        return new PostCommentResponse(
+                this.id, this.title, this.content, this.member.getUsername(), this.comments
+        );
     }
 }

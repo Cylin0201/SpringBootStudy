@@ -4,18 +4,163 @@
     <meta charset="UTF-8">
     <title>게시글 상세</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 2em;
+            color: #333;
+        }
+
+        /* 게시글 */
+        .post-header {
+            margin-bottom: 1em;
+        }
+
+        .post-title {
+            font-size: 2em;
+            margin: 0;
+            color: #222;
+        }
+
+        .post-meta {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 1em;
+        }
+
+        .post-content {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 2em;
+        }
+
+        /* 댓글 */
+        .comments-section {
+            margin-top: 2em;
+        }
+
+        .comment {
+            padding: 0.8em 1em;
+            margin-bottom: 1em;
+            border-left: 3px solid #dee2e6;
+            background-color: #fff;
+            border-radius: 4px;
+        }
+
+        .comment .meta {
+            font-size: 0.85em;
+            color: gray;
+            margin-bottom: 0.3em;
+        }
+
+        .children {
+            margin-left: 2em;
+            padding-left: 1em;
+            border-left: 2px solid #ccc;
+            background-color: #f1f3f5;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 60px;
+            padding: 0.5em;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 0.5em;
+            padding: 0.4em 0.8em;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .comment-form {
+            margin-top: 1em;
+        }
+    </style>
 </head>
 <body>
-<h1 th:text="${post.title}">게시글 제목</h1>
 
-<p><strong>작성자:</strong> <span th:text="${post.memberName}">작성자</span></p>
-<p><strong>내용:</strong></p>
-<p th:text="${post.content}">게시글 내용</p>
+<div class="post-header">
+    <h1 class="post-title" th:text="${post.title}">게시글 제목</h1>
+    <p class="post-meta">
+        작성자: <span th:text="${post.memberName}">작성자</span>
+    </p>
+</div>
+
+<div class="post-content" th:text="${post.content}">게시글 내용</div>
+
+<div class="comments-section">
+    <h2>댓글</h2>
+
+    <p th:if="${#lists.isEmpty(post.comments)}">아직 댓글이 없습니다.</p>
+
+    <div th:unless="${#lists.isEmpty(post.comments)}">
+        <div th:each="comment : ${post.comments}" th:if="${comment.parent == null}" class="comment">
+            <p><strong th:text="${comment.member.username}">댓글 작성자</strong></p>
+            <p th:text="${comment.content}">댓글 내용</p>
+            <p class="meta">
+                작성일: <span th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+            </p>
+
+            <!-- 대댓글 -->
+            <div class="children" th:each="child : ${comment.children}">
+                <p><strong th:text="${child.member.username}">대댓글 작성자</strong></p>
+                <p th:text="${child.content}">대댓글 내용</p>
+                <p class="meta">
+                    작성일: <span th:text="${#temporals.format(child.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                </p>
+            </div>
+
+            <!-- 대댓글 작성 폼 (각 댓글 당 단 1개) -->
+            <form th:action="@{'/posts/' + ${post.id} + '/comments'}" method="post" class="comment-form">
+                <input type="hidden" name="parentId" th:value="${comment.id}"/>
+                <textarea name="content" placeholder="대댓글 작성" required></textarea>
+                <button type="submit">대댓글 작성</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 새 댓글 작성 -->
+    <h3>댓글 작성하기</h3>
+    <form th:action="@{'/posts/' + ${post.id} + '/comments'}" method="post" class="comment-form">
+        <textarea name="content" placeholder="댓글을 입력하세요" required></textarea>
+        <button type="submit">댓글 작성</button>
+    </form>
+
+</div>
 
 <!-- 삭제 버튼: 작성자만 -->
 <form th:if="${canDelete}" th:action="@{'/posts/' + ${post.id}}" method="post">
     <input type="hidden" name="_method" value="delete"/>
-    <button type="submit">삭제</button>
+    <button type="submit" class="delete-btn">삭제</button>
 </form>
 
 <p><a th:href="@{/posts}">목록으로 돌아가기</a></p>

@@ -4,8 +4,10 @@ import com.backend.ureca.cylin0201.startspring.domain.Post;
 import com.backend.ureca.cylin0201.startspring.domain.Member;
 import com.backend.ureca.cylin0201.startspring.member.dto.LoginDto;
 import com.backend.ureca.cylin0201.startspring.member.dto.MemberResponse;
+import com.backend.ureca.cylin0201.startspring.post.dto.PostCommentResponse;
 import com.backend.ureca.cylin0201.startspring.post.dto.PostResponse;
 import com.backend.ureca.cylin0201.startspring.member.service.MemberService;
+import com.backend.ureca.cylin0201.startspring.post.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,7 +31,7 @@ public class MemberController {
     // 회원가입 폼 화면
     @GetMapping("/join")
     public String joinForm(Model model) {
-        model.addAttribute("loginDto", new LoginDto()); // 폼에 바인딩할 객체
+        model.addAttribute("loginDto", new LoginDto());
         return "member/join";
     }
 
@@ -44,7 +46,7 @@ public class MemberController {
     @GetMapping("/login")
     public String loginForm(Model model) {
         model.addAttribute("loginDto", new LoginDto());
-        return "member/login"; // login.html
+        return "member/login";
     }
 
     // 로그인 처리
@@ -57,25 +59,33 @@ public class MemberController {
             return "member/login";
         }
 
-        // 1. 로그인 성공 시 SecurityContextHolder에 인증 정보 등록
+        // SecurityContext 생성 및 등록
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 member.getUsername(), null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 2. HttpSession에도 보관 (시큐리티 세션 동기화)
+        // HttpSession에 SecurityContext 저장
         session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+        // 로그인 성공 시 memberName도 세션에 저장
+        session.setAttribute("memberName", member.getUsername());
 
         return "redirect:/posts";
     }
 
+    @PostMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // 세션 무효화
+        return "redirect:/posts";
+    }
 
+    // 아래 API는 기존 그대로
     @ResponseBody
     @GetMapping("/members/{id}")
     public ResponseEntity<MemberResponse> findById(@PathVariable Long id) {
         Member member = memberService.findById(id)
-                .orElseThrow(()->new IllegalArgumentException("존재하지 않는 멤버입니다."));
-        return ResponseEntity.ok()
-                .body(member.from());
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버입니다."));
+        return ResponseEntity.ok().body(member.from());
     }
 
     @ResponseBody
@@ -86,13 +96,6 @@ public class MemberController {
                 .map(Member::from)
                 .toList();
         return ResponseEntity.ok(memberList);
-    }
-
-    @ResponseBody
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpSession session) {
-        session.invalidate(); // 세션 무효화 → 로그아웃
-        return ResponseEntity.ok("로그아웃 완료");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

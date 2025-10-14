@@ -1,6 +1,9 @@
 package com.backend.ureca.cylin0201.startspring.post.service;
 
+import com.backend.ureca.cylin0201.startspring.comment.repository.CommentRepository;
+import com.backend.ureca.cylin0201.startspring.domain.Comment;
 import com.backend.ureca.cylin0201.startspring.domain.Post;
+import com.backend.ureca.cylin0201.startspring.post.dto.PostCommentResponse;
 import com.backend.ureca.cylin0201.startspring.post.dto.PostRequest;
 import com.backend.ureca.cylin0201.startspring.post.dto.UpdatePostRequest;
 import com.backend.ureca.cylin0201.startspring.post.repository.PostRepository;
@@ -9,9 +12,11 @@ import com.backend.ureca.cylin0201.startspring.post.dto.PostResponse;
 import com.backend.ureca.cylin0201.startspring.member.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -19,6 +24,7 @@ import java.util.List;
 public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
 
     //포스트 작성
     public PostResponse uploadPost(PostRequest postRequest) {
@@ -41,7 +47,7 @@ public class PostService {
         );
     }
 
-    //포스트 조회
+    //포스트만 조회
     public PostResponse getPostById(Long id){
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 Post입니다."));
@@ -53,6 +59,23 @@ public class PostService {
                 post.getMember().getUsername()
         );
     }
+
+    @Transactional(readOnly = true)
+    public PostCommentResponse getPostComments(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        List<Comment> comments = commentRepository.findAllByPostId(postId);
+
+        return new PostCommentResponse(
+                post.getId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getMember().getUsername(),
+                comments
+        );
+    }
+
 
     public List<PostResponse> getAllPosts(){
         List<Post> posts = postRepository.findAll();
@@ -90,5 +113,17 @@ public class PostService {
 
         postRepository.deleteById(postId);
         return postId;
+    }
+
+
+    //검색 기능
+    public List<Long> searchPostIdsByTitle(String keyword) {
+        if (keyword == null || keyword.isEmpty()) return Collections.emptyList();
+        return postRepository.searchIdByTitle(keyword);
+    }
+
+    public List<Long> searchPostIdsByTitleOrContent(String keyword) {
+        if (keyword == null || keyword.isEmpty()) return Collections.emptyList();
+        return postRepository.searchIdByTitleOrContent(keyword);
     }
 }

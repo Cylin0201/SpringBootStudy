@@ -2,6 +2,7 @@ package com.backend.ureca.cylin0201.startspring.post.controller;
 
 import com.backend.ureca.cylin0201.startspring.domain.Member;
 import com.backend.ureca.cylin0201.startspring.member.service.MemberService;
+import com.backend.ureca.cylin0201.startspring.post.dto.PostCommentResponse;
 import com.backend.ureca.cylin0201.startspring.post.dto.PostRequest;
 import com.backend.ureca.cylin0201.startspring.post.dto.UpdatePostRequest;
 import com.backend.ureca.cylin0201.startspring.post.service.PostService;
@@ -41,10 +42,16 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public String getPosts(Model model) {
+    public String postList(HttpSession session, Model model) {
+        // posts 서비스 호출 (예시)
         List<PostResponse> posts = postService.getAllPosts();
         model.addAttribute("posts", posts);
-        return "post/posts";
+
+        // 로그인 상태 체크
+        String memberName = (String) session.getAttribute("memberName");
+        model.addAttribute("memberName", memberName); // null이면 로그인 안 됨
+
+        return "post/posts"; // Thymeleaf 템플릿
     }
 
     @PostMapping("/posts")
@@ -55,8 +62,8 @@ public class PostController {
 
     @GetMapping("/posts/{postId}")
     public String getDetailPost(@PathVariable("postId") Long postId, Model model, HttpSession session) {
-        PostResponse post = postService.getPostById(postId);
-        model.addAttribute("post", post);
+        PostCommentResponse res = postService.getPostComments(postId);
+        model.addAttribute("post", res);
 
         SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
         if (context == null || context.getAuthentication() == null) {
@@ -66,8 +73,10 @@ public class PostController {
         String username = context.getAuthentication().getName();
         Member loginMember = memberService.findByUserName(username).orElse(null);
 
-        boolean canDelete = loginMember != null && loginMember.getUsername().equalsIgnoreCase(post.getMemberName());
+        boolean canDelete = loginMember != null && loginMember.getUsername().equalsIgnoreCase(res.getMemberName());
         model.addAttribute("canDelete", canDelete);
+
+        model.addAttribute("comments", res.getComments());
 
         return "post/post_detail";
     }

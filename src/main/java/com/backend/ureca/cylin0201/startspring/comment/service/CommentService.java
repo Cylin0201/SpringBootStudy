@@ -23,14 +23,14 @@ public class CommentService {
 
     // 댓글 엔티티화
     public Comment createComment(CommentRequest req) {
-        if (req.getMemberId() == null) {
+        if (req.getMemberName() == null) {
             throw new IllegalArgumentException("멤버 아이디가 null입니다.");
         }
         if (req.getPostId() == null) {
             throw new IllegalArgumentException("포스트 아이디가 null입니다.");
         }
 
-        Member member = memberRepository.findById(req.getMemberId())
+        Member member = memberRepository.findByUsername(req.getMemberName())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 멤버 ID"));
         Post post = postRepository.findById(req.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글 ID"));

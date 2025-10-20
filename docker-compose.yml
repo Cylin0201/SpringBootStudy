@@ -5,10 +5,11 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: pass
+      MYSQL_ROOT_HOST: "%"
       MYSQL_DATABASE: post_db
       # MYSQL_USER와 MYSQL_PASSWORD는 루트가 이미 있으므로 생략 가능
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
 

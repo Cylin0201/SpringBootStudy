@@ -104,6 +104,16 @@
         .comment-form {
             margin-top: 1em;
         }
+
+        .author-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .author-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -111,7 +121,7 @@
 <div class="post-header">
     <h1 class="post-title" th:text="${post.title}">게시글 제목</h1>
     <p class="post-meta">
-        작성자: <span th:text="${post.memberName}">작성자</span>
+        작성자: <a th:href="@{/mypage(membername=${post.memberName})}" th:text="${post.memberName}" class="author-link">작성자</a>
     </p>
 </div>
 
@@ -124,7 +134,13 @@
 
     <div th:unless="${#lists.isEmpty(post.comments)}">
         <div th:each="comment : ${post.comments}" th:if="${comment.parent == null}" class="comment">
-            <p><strong th:text="${comment.member.username}">댓글 작성자</strong></p>
+            <p>
+                <strong>
+                    <a th:href="@{/mypage(membername=${comment.member.username})}"
+                       th:text="${comment.member.username}"
+                       class="author-link">댓글 작성자</a>
+                </strong>
+            </p>
             <p th:text="${comment.content}">댓글 내용</p>
             <p class="meta">
                 작성일: <span th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
@@ -132,7 +148,13 @@
 
             <!-- 대댓글 -->
             <div class="children" th:each="child : ${comment.children}">
-                <p><strong th:text="${child.member.username}">대댓글 작성자</strong></p>
+                <p>
+                    <strong>
+                        <a th:href="@{/mypage(membername=${child.member.username})}"
+                           th:text="${child.member.username}"
+                           class="author-link">대댓글 작성자</a>
+                    </strong>
+                </p>
                 <p th:text="${child.content}">대댓글 내용</p>
                 <p class="meta">
                     작성일: <span th:text="${#temporals.format(child.createdAt, 'yyyy-MM-dd HH:mm')}"></span>

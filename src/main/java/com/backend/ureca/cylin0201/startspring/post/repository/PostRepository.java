@@ -20,4 +20,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p WHERE p.title LIKE %:keyword% OR p.content LIKE %:keyword%")
     Page<Post> searchIdByTitleOrContent(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT COUNT(p) FROM Post p WHERE p.member.id = :memberId")
+    Long countByMemberId(@Param("memberId") Long memberId);
 }

@@ -5,9 +5,23 @@
     <title>글쓰기</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-<h1>게시글 작성</h1>
 
+<div class="header">
+    <h1>게시글 작성</h1>
+    <div class="user-info">
+    <span th:if="${loginMemberName != null}">
+        환영합니다,
+        <a th:href="@{/mypage}" th:text="${loginMemberName}" style="text-decoration: none; color: #007bff; font-weight: 600;">사용자</a>님!
+        <button class="logout-btn" onclick="logout()">로그아웃</button>
+    </span>
+        <span th:if="${loginMemberName == null}">
+        로그인 필요
+        <a th:href="@{/login}">로그인</a>
+    </span>
+    </div>
+</div>
+
+<body>
 <form th:action="@{/posts}" th:object="${postRequest}" method="post">
     <input type="hidden" th:field="*{memberId}" th:value="${memberId}" />
 

@@ -107,6 +107,19 @@
             border-bottom: 1px solid #dee2e6;
         }
 
+        /* 열 너비 조정 */
+        th:nth-child(1), td:nth-child(1) {
+            width: 60px;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 500px;
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            width: 120px;
+        }
+
         th {
             background-color: #f1f3f5;
             font-weight: 600;
@@ -143,14 +156,15 @@
 <div class="header">
     <h1>게시글 목록</h1>
     <div class="user-info">
-        <span th:if="${memberName != null}">
-            환영합니다, <span th:text="${memberName}">사용자</span>!
-            <button class="logout-btn" onclick="logout()">로그아웃</button>
-        </span>
+    <span th:if="${memberName != null}">
+        환영합니다,
+        <a th:href="@{/mypage}" th:text="${memberName}" style="text-decoration: none; color: #007bff; font-weight: 600;">사용자</a>님!
+        <button class="logout-btn" onclick="logout()">로그아웃</button>
+    </span>
         <span th:if="${memberName == null}">
-            로그인 필요
-            <a th:href="@{/login}">로그인</a>
-        </span>
+        로그인 필요
+        <a th:href="@{/login}">로그인</a>
+    </span>
     </div>
 </div>
 
@@ -174,7 +188,6 @@
     <tr>
         <th>글 번호</th>
         <th>제목</th>
-        <th>내용</th>
         <th>작성자</th>
     </tr>
     </thead>
@@ -184,8 +197,9 @@
         <td>
             <a th:href="@{'/posts/' + ${post.id}}" th:text="${post.title}">제목</a>
         </td>
-        <td th:text="${post.content}">내용</td>
-        <td th:text="${post.memberName}">작성자</td>
+        <td>
+            <a th:href="@{/mypage?membername={membername}(membername=${post.memberName})}" th:text="${post.memberName}">작성자</a>
+        </td>
     </tr>
     </tbody>
 </table>
@@ -230,3 +244,5 @@
         background-color: #e9ecef;
     }
 </style>
+</body>
+</html>

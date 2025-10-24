@@ -32,39 +32,6 @@ public class PostController {
     private final PostRepository postRepository;
     private final MemberService memberService;
 
-    @ResponseBody
-    @GetMapping("/posts/boomb")
-    @Transactional
-    public ResponseEntity<Void> insertMillionPosts() {
-        final int TOTAL = 1_000_001;
-        final int BATCH_SIZE = 5000; // 한 번에 flush할 배치 크기
-
-        List<Post> batch = new ArrayList<>(BATCH_SIZE);
-
-        for (long i = 2; i <= TOTAL; i++) {
-            Post post = Post.builder()
-                    .member(memberService.findById(1L).orElseThrow(() -> new IllegalArgumentException("유효하지 않은 유저")))
-                    .title("테스트 제목 " + i)
-                    .content("테스트 내용 " + i)
-                    .build();
-            batch.add(post);
-
-            if (batch.size() == BATCH_SIZE) {
-                postRepository.saveAll(batch);
-                postRepository.flush(); // flush 후 메모리 비우기
-                batch.clear();
-            }
-        }
-
-        // 남은 데이터 flush
-        if (!batch.isEmpty()) {
-            postRepository.saveAll(batch);
-            postRepository.flush();
-        }
-
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/posts/new")
     public String newPostForm(Model model, HttpSession session) {
         SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
